@@ -1,0 +1,30 @@
+{
+  "name": "react-sc2-server",
+  "main": "src/index.ts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "nodemon": "nodemon --watch 'src/**/*.ts'  --watch 'src/*.ts' --exec 'ts-node src/index.ts' src/index.ts"
+  },
+  "keywords": [
+    "AI"
+  ],
+  "author": "Andreas Bresser, DFKI GmbH",
+  "license": "BSD-3",
+  "bugs": {
+    "url": "https://github.com/brean/"
+  },
+  "homepage": "https://github.com/brean/",
+  "proxy": "http://localhost:3000",
+  "dependencies": {
+    "@types/express": "^4.17.11",
+    "@types/js-yaml": "^4.0.5",
+    "express": "^4.17.1",
+    "js-yaml": "^4.1.0",
+    "nodemon": "^2.0.7",
+    "ts-loader": "^4.2.0",
+    "ts-node": "^5.0.1",
+    "typescript": "^4.7.4"
+  }
+}
