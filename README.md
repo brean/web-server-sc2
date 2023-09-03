@@ -27,4 +27,4 @@ Andreas Bresser, self@andreasbresser.de
 
 ## Authors / Contributers
 
-Authors and contributers are [listed on github](/graphs/contributors).
+Authors and contributers are [listed on github](https://github.com/brean/web-server-sc2/graphs/contributors).
