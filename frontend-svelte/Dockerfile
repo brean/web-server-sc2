@@ -1,4 +1,4 @@
-FROM node:lts-alpine as base
+FROM node:lts-alpine
 
 WORKDIR /app
 ADD ./package*.json ./
@@ -12,4 +12,5 @@ ADD ./.npmrc ./
 RUN npm i -D
 
 COPY . ./
+RUN npm run smui
 CMD npm run dev -- --host

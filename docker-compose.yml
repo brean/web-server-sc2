@@ -3,13 +3,14 @@ services:
     image: web-backend-sc2
     container_name: web-backend-sc2
     build:
+      network: host
       context: ./backend
       dockerfile: ./Dockerfile
     ports:
       - 4000:4000
     volumes: 
-      - ./backend/src /app/src
-      - ./backend/static /app/static
+      - ./backend/src:/app/src
+      - ./backend/static:/app/static
 
 
   web-frontend-sc2:
@@ -18,10 +19,11 @@ services:
     depends_on:
       - web-backend-sc2
     build:
+      network: host
       context: ./frontend-svelte
       dockerfile: ./Dockerfile
     ports:
       - 5173:5173
     volumes: 
-      - ./frontend-svelte/src /app/src
-      - ./frontend-svelte/static /app/static
+      - ./frontend-svelte/src:/app/src:rw
+      - ./frontend-svelte/static:/app/static:ro
