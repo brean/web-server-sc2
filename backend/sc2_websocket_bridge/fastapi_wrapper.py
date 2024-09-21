@@ -16,8 +16,7 @@ async def handle_data_sc(websocket, data, game_id):
         return
     data['game_id'] = game_id
     await browser_con.broadcast_json(data)
-    print(data)
-    logger.info(str(data))
+    # logger.info(str(data))
 
 
 async def handle_data_browser(websocket, data):
