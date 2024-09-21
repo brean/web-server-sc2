@@ -1,0 +1,9 @@
+argcomplete
+fastapi
+pyyaml
+uvicorn[standard]
+websockets
+pyjwt
+pydantic
+passlib
+python-multipart
