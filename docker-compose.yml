@@ -9,9 +9,7 @@ services:
     ports:
       - 8000:8000
     volumes: 
-      - ./backend/src:/app/src
-      - ./backend/static:/app/static
-
+      - ./backend/sc2_websocket_bridge:/app/sc2_websocket_bridge
 
   web-frontend-sc2:
     image: web-frontend-sc2
@@ -20,10 +18,10 @@ services:
       - web-backend-sc2
     build:
       network: host
-      context: ./frontend-svelte
+      context: ./frontend
       dockerfile: ./Dockerfile
     ports:
       - 8080:8080
     volumes: 
-      - ./frontend-svelte/src:/app/src:rw
-      - ./frontend-svelte/static:/app/static:ro
+      - ./frontend/src:/app/src:rw
+      - ./frontend/static:/app/static:ro
