@@ -33,6 +33,10 @@ def init_fastapi(app: FastAPI):
         game_id = sc_con.add(websocket)
         # TODO: force user to Login with token
         try:
+            await browser_con.broadcast_json({
+                'type': 'new_game',
+                'game_id': game_id
+            })
             while True:
                 data = await websocket.receive_json()
                 await handle_data_sc(websocket, data, game_id)
@@ -48,6 +52,11 @@ def init_fastapi(app: FastAPI):
         user_id = browser_con.add(websocket)
         # TODO: force user to Login with token
         try:
+            for game_id in sc_con.named_connections.keys():
+                await websocket.send_json({
+                    'type': 'new_game',
+                    'game_id': game_id
+                })
             while True:
                 data = await websocket.receive_json()
                 await handle_data_browser(websocket, data)
@@ -55,6 +64,8 @@ def init_fastapi(app: FastAPI):
             logger.error('[sc] 😖 Error: %s', e)
         finally:
             browser_con.disconnect(user_id)
+
+    # TODO get replay via app.get...
 
 
 def init_websocket(production=True):
