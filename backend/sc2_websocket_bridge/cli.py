@@ -30,8 +30,9 @@ def setup_argparse():
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-p', '--port', type=int, default=8080)
-    parser.add_argument('-l', '--log_level', type=str, default='info')
+    parser.add_argument('--port', type=int, default=8000)
+    parser.add_argument('--host', type=str, default='localhost')
+    parser.add_argument('--log', type=str, default='info')
     parser.add_argument('--production', type=bool, default=True)
     return parser
 
@@ -39,7 +40,7 @@ def setup_argparse():
 def setup():
     """parse data and create websocket."""
     args = setup_argparse().parse_args()
-    logger = setup_logging(log_level=args.log_level)
+    logger = setup_logging(log_level=args.log)
     loop = asyncio.get_event_loop()
     return logger, loop, args
 

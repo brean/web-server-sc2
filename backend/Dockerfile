@@ -11,6 +11,8 @@ RUN apt-get update -qq \
   python3-pip \
   && rm -rf /var/lib/apt/lists/*
 
+EXPOSE 8000
+
 COPY ./requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt
 
@@ -19,4 +21,4 @@ WORKDIR /app/
 
 # the order is important, we need to compile the proto-files before installing
 RUN pip3 install -e .
-CMD ["sc2_web"]
+CMD ["sc2_web", "--port", "8000", "--host", "0.0.0.0"]
