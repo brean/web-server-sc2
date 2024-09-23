@@ -6,9 +6,9 @@
 import asyncio
 import argparse
 import logging
-from uvicorn import Config, Server
 
-from .fastapi_wrapper import init_websocket
+from .fastapi_wrapper import init_fastapi
+
 
 LOG_LEVEL = {
     'critical': logging.CRITICAL,
@@ -32,16 +32,8 @@ def setup_argparse():
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-p', '--port', type=int, default=8080)
     parser.add_argument('-l', '--log_level', type=str, default='info')
+    parser.add_argument('--production', type=bool, default=True)
     return parser
-
-
-def init_fastapi(logger, loop, args):
-    """run FastAPI server."""
-    logger.info('⚡ Provide WebSocket interface using fastapi')
-    app = init_websocket()
-    config = Config(app=app, loop=loop, host='0.0.0.0', port=8000)
-    server = Server(config)
-    return server
 
 
 def setup():
@@ -54,6 +46,15 @@ def setup():
 
 def main():
     logger, loop, args = setup()
-    server = init_fastapi(logger, loop, args)
+    server = init_fastapi(
+        logger=logger,
+        loop=loop,
+        host=args.host,
+        production=str(args.production).lower() in ['true', 'yes'],
+        port=int(args.port))
     loop.run_until_complete(server.serve())
     logger.info('exiting')
+
+
+if __name__ == '__main__':
+    main()

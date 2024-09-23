@@ -35,7 +35,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'sc2_web = sc2_websocket_bridge.main:main',
+            'sc2_web = sc2_websocket_bridge.cli:main',
         ],
     },
 )

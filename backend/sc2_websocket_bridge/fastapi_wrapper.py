@@ -1,15 +1,15 @@
 import logging
 from fastapi import FastAPI, WebSocket
+from uvicorn import Config, Server
+from starlette.websockets import WebSocketDisconnect
 
 from .utils import WebSocketConnectionManager
 
 
-logger = logging.getLogger(__name__)
-sc_con = WebSocketConnectionManager(logger)
-browser_con = WebSocketConnectionManager(logger)
+default_logger = logging.getLogger(__name__)
 
 
-async def handle_data_sc(websocket, data, game_id):
+async def handle_data_sc(logger, browser_con, websocket, data, game_id):
     """New data from StarCraft 2."""
     if 'type' not in data:
         logger.error('[sc] 😖 Error: type not set for data')
@@ -25,7 +25,7 @@ async def handle_data_browser(websocket, data):
     return
 
 
-def init_fastapi(app: FastAPI):
+def init_app(app: FastAPI, logger, sc_con, browser_con):
     @app.websocket('/sc_client')
     async def websocket_sc_client(websocket: WebSocket):
         """Connection form StarCraft 2 to the Web Server."""
@@ -39,9 +39,10 @@ def init_fastapi(app: FastAPI):
             })
             while True:
                 data = await websocket.receive_json()
-                await handle_data_sc(websocket, data, game_id)
-        except Exception as e:
-            logger.error('[sc] 😖 Error: %s', e)
+                await handle_data_sc(
+                    logger, browser_con, websocket, data, game_id)
+        except WebSocketDisconnect as wsd:
+            logger.error('[sc] 😖 Error: %s', wsd)
         finally:
             sc_con.disconnect(game_id)
 
@@ -60,20 +61,27 @@ def init_fastapi(app: FastAPI):
             while True:
                 data = await websocket.receive_json()
                 await handle_data_browser(websocket, data)
-        except Exception as e:
-            logger.error('[sc] 😖 Error: %s', e)
+        except WebSocketDisconnect as wsd:
+            logger.error('[web] 😖 Error: %s', wsd)
         finally:
             browser_con.disconnect(user_id)
 
     # TODO get replay via app.get...
 
 
-def init_websocket(production=True):
-    """Setup WebSocket endpoints."""
+def init_fastapi(logger, loop, host, port, production=True):
+    """run FastAPI server."""
+    logger = logger if logger else default_logger
+    logger.info('⚡ Provide WebSocket interface using fastapi')
+
+    sc_con = WebSocketConnectionManager(logger)
+    browser_con = WebSocketConnectionManager(logger)
+
     if production:
         app = FastAPI(docs_url=None, redoc_url=None)
     else:
         app = FastAPI()
-
-    init_fastapi(app)
-    return app
+    init_app(app, logger, sc_con, browser_con)
+    config = Config(app=app, loop=loop, host=host, port=port)
+    server = Server(config)
+    return server
