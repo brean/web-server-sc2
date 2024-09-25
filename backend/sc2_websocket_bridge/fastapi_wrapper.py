@@ -9,23 +9,31 @@ from .utils import WebSocketConnectionManager
 default_logger = logging.getLogger(__name__)
 
 
-async def handle_data_sc(logger, browser_con, websocket, data, game_id):
-    """New data from StarCraft 2."""
-    if 'type' not in data:
-        logger.error('[sc] 😖 Error: type not set for data')
-        return
-    data['game_id'] = game_id
-    await browser_con.broadcast_json(data)
-    # logger.info(str(data))
-
-
-async def handle_data_browser(websocket, data):
-    """New data from Web Browser."""
-    # todo: start/pause game
-    return
-
-
 def init_app(app: FastAPI, logger, sc_con, browser_con):
+    async def handle_data_sc(websocket, data, game_id):
+        """New data from StarCraft 2."""
+        if 'type' not in data:
+            logger.error('[sc] 😖 Error: type not set for data')
+            return
+        data['game_id'] = game_id
+        if data['type'] == 'new_game':
+            logger.error('add new game')
+            sc_con.games[game_id] = data
+        await browser_con.broadcast_json(data)
+        # logger.info(str(data))
+
+    async def handle_data_browser(websocket, data):
+        """New data from Web Browser."""
+        # todo: start/pause game
+        if data['type'] == 'start_game':
+            game_id = data['game_id']
+            if game_id in sc_con.games:
+                await sc_con.send_json(game_id, data)
+                await websocket.send_json({
+                    'type': 'game_started',
+                    'game_id': game_id
+                })
+
     @app.websocket('/sc_client')
     async def websocket_sc_client(websocket: WebSocket):
         """Connection form StarCraft 2 to the Web Server."""
@@ -33,17 +41,14 @@ def init_app(app: FastAPI, logger, sc_con, browser_con):
         game_id = sc_con.add(websocket)
         # TODO: force user to Login with token
         try:
-            await browser_con.broadcast_json({
-                'type': 'new_game',
-                'game_id': game_id
-            })
             while True:
                 data = await websocket.receive_json()
-                await handle_data_sc(
-                    logger, browser_con, websocket, data, game_id)
+                await handle_data_sc(websocket, data, game_id)
         except WebSocketDisconnect as wsd:
             logger.error('[sc] 😖 Error: %s', wsd)
         finally:
+            if game_id in sc_con.games:
+                del sc_con.games[game_id]
             sc_con.disconnect(game_id)
 
     @app.websocket('/web_client')
@@ -53,11 +58,8 @@ def init_app(app: FastAPI, logger, sc_con, browser_con):
         user_id = browser_con.add(websocket)
         # TODO: force user to Login with token
         try:
-            for game_id in sc_con.named_connections.keys():
-                await websocket.send_json({
-                    'type': 'new_game',
-                    'game_id': game_id
-                })
+            for game_id in sc_con.games.keys():
+                await websocket.send_json(sc_con.games[game_id])
             while True:
                 data = await websocket.receive_json()
                 await handle_data_browser(websocket, data)
@@ -76,6 +78,7 @@ def init_fastapi(logger, loop, host, port, production=True):
 
     sc_con = WebSocketConnectionManager(logger)
     browser_con = WebSocketConnectionManager(logger)
+    sc_con.games = {}
 
     if production:
         app = FastAPI(docs_url=None, redoc_url=None)
