@@ -3,6 +3,10 @@ import { get } from 'svelte/store';
 import BaseCom from "./BaseCom";
 import IGameMeta from '$lib/model/IGameMeta';
 import games from '$lib/store/games';
+import current_map from '$lib/store/map';
+import current_step from '$lib/store/step';
+import IMap from '$lib/model/IMap';
+import IGameStep from '$lib/model/IGameStep';
 
 // Websocket communication class for basic control
 // can only be called onMount!
@@ -23,11 +27,20 @@ export default class SCCom extends BaseCom {
         g.push(data as IGameMeta);
         games.set(g);
         break;
+      case 'map':
+        current_map.set(data as IMap)
+        break;
       case 'game_started':
-        // TODO: find game with data.game_id and set started to true;
+        const all_games = get(games)
+        for (const g of all_games) {
+          if (g.game_id === data.game_id) {
+            g.started = true
+            games.set(all_games);
+          }
+        }
         break;
       case 'step':
-        // TODO: call render callback from IGameStep
+        current_step.set(data as IGameStep)
         break;
     }
     console.log(data);

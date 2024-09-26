@@ -1,4 +1,4 @@
-export default interface IGameState {
+export default interface IGameStep {
   game_id: string
   iteration: number
   units: [x: number, y: number, type: number][]
