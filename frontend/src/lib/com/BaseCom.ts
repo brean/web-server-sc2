@@ -1,16 +1,11 @@
-// Communication base class, handles incoming (or fake) data
-// and forwards it to the right service.
-import { get } from 'svelte/store';
-
 export default class BaseCom {
   websocket: WebSocket;
   endpoint: string;
   queue: string[] = [];
 
-  constructor(port: number, endpoint: string) {
-    const hostname = window.location.hostname;
+  constructor(endpoint: string) {
     this.endpoint = endpoint;
-    this.websocket = new WebSocket(`ws://${hostname}:${port}/${endpoint}`);
+    this.websocket = new WebSocket(endpoint);
     this.websocket.onmessage = this.handleMessage.bind(this);
     this.websocket.onopen = this.onOpen.bind(this);
   }

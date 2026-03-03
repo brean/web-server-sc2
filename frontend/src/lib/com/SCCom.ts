@@ -1,18 +1,15 @@
 import { get } from 'svelte/store';
 
 import BaseCom from "./BaseCom";
-import IGameMeta from '$lib/model/IGameMeta';
-import games from '$lib/store/games';
-import current_map from '$lib/store/map';
-import current_step from '$lib/store/step';
-import IMap from '$lib/model/IMap';
-import IGameStep from '$lib/model/IGameStep';
+import IGameMeta from '$lib/interfaces/IGameMeta';
+import IMap from '$lib/interfaces/IMap';
+import IGameStep from '$lib/interfaces/IGameStep';
 
 // Websocket communication class for basic control
 // can only be called onMount!
 export default class SCCom extends BaseCom {
   constructor() {
-    super(8000, 'web_client');
+    super('web_client');
   }
 
   handleMessage(ev: MessageEvent) {
