@@ -1,9 +1,9 @@
 import { get } from 'svelte/store';
 
 import BaseCom from "./BaseCom";
-import IGameMeta from '$lib/interfaces/IGameMeta';
-import IMap from '$lib/interfaces/IMap';
-import IGameStep from '$lib/interfaces/IGameStep';
+import type IGameMeta from '$lib/interfaces/IGameMeta';
+import type IMap from '$lib/interfaces/IMap';
+import type IGameStep from '$lib/interfaces/IGameStep';
 
 // Websocket communication class for basic control
 // can only be called onMount!
