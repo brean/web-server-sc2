@@ -18,7 +18,7 @@ def init_app(app: FastAPI, logger, sc_con, browser_con):
         data['game_id'] = game_id
         if data['type'] == 'new_game':
             logger.error('add new game')
-            sc_con.games[game_id] = data
+            games[game_id] = data
         await browser_con.broadcast_json(data)
         # logger.info(str(data))
 
@@ -78,6 +78,8 @@ def init_fastapi(logger, loop, host, port, production=True):
 
     sc_con = WebSocketConnectionManager(logger)
     browser_con = WebSocketConnectionManager(logger)
+
+    
     sc_con.games = {}
 
     if production:
