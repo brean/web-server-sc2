@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
 
 import BaseCom from "./BaseCom";
-import type IGameMeta from '$lib/interfaces/IGameMeta';
+import type IGameInfo from '$lib/interfaces/IGameInfo';
 import type IMap from '$lib/interfaces/IMap';
 import type IGameStep from '$lib/interfaces/IGameStep';
 
@@ -21,7 +21,7 @@ export default class SCCom extends BaseCom {
     switch (data.type) {
       case 'new_game':
         const g = get(games);
-        g.push(data as IGameMeta);
+        g.push(data as IGameInfo);
         games.set(g);
         break;
       case 'map':

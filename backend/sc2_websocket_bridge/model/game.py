@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass
 
 
@@ -9,3 +10,12 @@ class GameStep:
     structures: list
     enemy_units: list
     enemy_structures: list
+
+@dataclass
+class GameInfo:
+    game_id: str
+    bot_name: str
+    map: str
+    opponent_name: str
+    started: datetime.datetime
+    finished: datetime.datetime

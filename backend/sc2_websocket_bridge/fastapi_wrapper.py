@@ -3,6 +3,7 @@ from fastapi import FastAPI, WebSocket
 from uvicorn import Config, Server
 from starlette.websockets import WebSocketDisconnect
 
+from .loader import load_games
 from .utils import WebSocketConnectionManager
 
 
@@ -71,7 +72,8 @@ def init_app(app: FastAPI, logger, sc_con, browser_con):
     # TODO get replay via app.get...
 
 
-def init_fastapi(logger, loop, host, port, production=True):
+def init_fastapi(
+        logger, loop, host, port, data_path, production=True):
     """run FastAPI server."""
     logger = logger if logger else default_logger
     logger.info('⚡ Provide WebSocket interface using fastapi')
@@ -79,8 +81,8 @@ def init_fastapi(logger, loop, host, port, production=True):
     sc_con = WebSocketConnectionManager(logger)
     browser_con = WebSocketConnectionManager(logger)
 
-    
-    sc_con.games = {}
+    games = load_games(data_path / 'replays')
+    print(games)
 
     if production:
         app = FastAPI(docs_url=None, redoc_url=None)

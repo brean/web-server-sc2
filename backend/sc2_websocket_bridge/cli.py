@@ -6,6 +6,7 @@
 import asyncio
 import argparse
 import logging
+from pathlib import Path
 
 from .fastapi_wrapper import init_fastapi
 
@@ -34,6 +35,8 @@ def setup_argparse():
     parser.add_argument('--host', type=str, default='localhost')
     parser.add_argument('--log_level', type=str, default='info')
     parser.add_argument('--production', type=bool, default=True)
+    parser.add_argument(
+        '--data_path', type=str, default='../bot/data/')
     return parser
 
 
@@ -51,6 +54,7 @@ def main():
         logger=logger,
         loop=loop,
         host=args.host,
+        data_path=Path(args.data_path),
         production=str(args.production).lower() in ['true', 'yes'],
         port=int(args.port))
     loop.run_until_complete(server.serve())
