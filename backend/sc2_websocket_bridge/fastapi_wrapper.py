@@ -1,3 +1,4 @@
+from dataclasses import asdict
 import logging
 from fastapi import FastAPI, WebSocket
 from uvicorn import Config, Server
@@ -10,7 +11,9 @@ from .utils import WebSocketConnectionManager
 default_logger = logging.getLogger(__name__)
 
 
-def init_app(app: FastAPI, logger, sc_con, browser_con):
+def init_app(
+        app: FastAPI, logger: logging.Logger, games: dict,
+        sc_con, browser_con):
     async def handle_data_sc(websocket, data, game_id):
         """New data from StarCraft 2."""
         if 'type' not in data:
@@ -69,7 +72,12 @@ def init_app(app: FastAPI, logger, sc_con, browser_con):
         finally:
             browser_con.disconnect(user_id)
 
-    # TODO get replay via app.get...
+    @app.get('/games')
+    async def _games():
+        game_info = {}
+        for game_id, game in games.items():
+            game_info[game_id] = asdict(game)
+        return game_info
 
 
 def init_fastapi(
@@ -82,13 +90,12 @@ def init_fastapi(
     browser_con = WebSocketConnectionManager(logger)
 
     games = load_games(data_path / 'replays')
-    print(games)
 
     if production:
         app = FastAPI(docs_url=None, redoc_url=None)
     else:
         app = FastAPI()
-    init_app(app, logger, sc_con, browser_con)
+    init_app(app, logger, games, sc_con, browser_con)
     config = Config(app=app, loop=loop, host=host, port=port)
     server = Server(config)
     return server

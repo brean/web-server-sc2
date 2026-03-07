@@ -19,13 +19,6 @@
       }
     ]
   })
-
-    let items = $state([
-    { id: 1, title: 'Project Alpha', desc: 'A Svelte 5 starter template.' },
-    { id: 2, title: 'Project Beta', desc: 'Responsive UI components.' },
-    { id: 3, title: 'Project Gamma', desc: 'Built with noph-ui and Runes.' },
-    { id: 4, title: 'Project Delta', desc: 'Scalable grid layouts.' }
-  ]);
 </script>
 <h4>Existing games</h4>
 
@@ -46,13 +39,6 @@
 <Button>Start new Game!</Button>
 
 <style>
-  .cards {
-    display: grid;
-    gap: 0.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    padding: 2rem;
-  }
-
   * {
     box-sizing: border-box;
   }
@@ -65,8 +51,6 @@
     width: 100%;
   }
 
-  /* Optional: Add a max-width for very large desktops to prevent cards 
-    from becoming too wide if only a few exist in a row */
   :global(.custom-card) {
     max-width: 450px; 
     justify-self: center;
